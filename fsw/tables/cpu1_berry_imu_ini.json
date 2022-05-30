@@ -1,0 +1,30 @@
+{
+   "title": "Pi-Sat Berry IMU initialization file",
+   "description": [ "Define runtime configurations",
+                    "SENSOR_DELTA_TIME is the time in milliseconds between sensor readings"]
+   "config": {
+      
+      "APP_CFE_NAME": "BERRY_IMU",
+      "APP_PERF_ID":  128,
+      
+      "APP_CMD_PIPE_NAME":  "BERRY_IMU_CMD",
+      "APP_CMD_PIPE_DEPTH": 5,
+      
+      "APP_CMD_MID"    :  6416,
+      "APP_SEND_HK_MID":  6417,
+      "APP_HK_TLM_MID" :  2320,
+      "IMU_RATE_TLM_MID": 2320,
+
+      "CHILD_NAME":       "BERRY_IMU_CHILD",
+      "CHILD_PERF_ID":    44,
+      "CHILD_STACK_SIZE": 16384,
+      "CHILD_PRIORITY":   80,
+
+      "IMU_DEVICE_FILE" :      "/dev/i2c-1",
+      "IMU_SENSOR_DELTA_TIME": 500
+      
+  }
+}
+
+
+
