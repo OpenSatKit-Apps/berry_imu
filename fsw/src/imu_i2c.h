@@ -51,7 +51,8 @@
 #define IMU_I2C_FILE_OPEN_ERR_EID      (IMU_I2C_BASE_EID + 0)
 #define IMU_I2C_IMU_DETECTED_EID       (IMU_I2C_BASE_EID + 1)
 #define IMU_I2C_IMU_DETECTION_ERR_EID  (IMU_I2C_BASE_EID + 2)
-
+#define IMU_I2C_IMU_ENABLED_EID        (IMU_I2C_BASE_EID + 3)
+#define IMU_I2C_IMU_ENABLED_ERR_EID    (IMU_I2C_BASE_EID + 4)
 
 /**********************/
 /** Type Definitions **/
@@ -91,7 +92,8 @@ typedef struct
 typedef struct
 {
 
-   int File;
+   int   File;
+   bool  Enabled;
    IMU_I2C_Version_t  Version;
       
    IMU_I2C_Interface_t  Accelerometer;
@@ -119,6 +121,18 @@ void IMU_I2C_Constructor(IMU_I2C_Class_t *ImuI2cPtrr, const char *DevFilename);
 
 
 /******************************************************************************
+** Function: IMU_I2C_InitializeInterface
+**
+** Detect and enable the I2C interface for each sensor
+**
+** Notes:
+**   1. Always outputs an event message
+**
+*/
+bool IMU_I2C_InitializeInterface(const char *DevFilename);
+
+
+/******************************************************************************
 ** Function: IMU_I2C_ResetStatus
 **
 ** Reset counters and status flags to a known reset state.
@@ -140,7 +154,7 @@ void IMU_I2C_ResetStatus(void);
 **   None
 **
 */
-void IMU_I2C_ReadAccelerometer(int AccData[]);
+bool IMU_I2C_ReadAccelerometer(int AccData[]);
 
 
 /******************************************************************************
@@ -152,7 +166,7 @@ void IMU_I2C_ReadAccelerometer(int AccData[]);
 **   None
 **
 */
-void IMU_I2C_ReadGyroscope(int GyroData[]);
+bool IMU_I2C_ReadGyroscope(int GyroData[]);
 
 
 #endif /* _imu_i2c_ */

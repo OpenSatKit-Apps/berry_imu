@@ -73,6 +73,7 @@ void IMU_CTRL_Constructor(IMU_CTRL_Class_t *ImuCtrlPtr, INITBL_Class_t* IniTbl)
 {
    
    ImuCtrl = ImuCtrlPtr;
+   ImuCtrl->IniTbl = IniTbl;
    
    memset(ImuCtrl, 0, sizeof(IMU_CTRL_Class_t));
 
@@ -87,6 +88,9 @@ void IMU_CTRL_Constructor(IMU_CTRL_Class_t *ImuCtrlPtr, INITBL_Class_t* IniTbl)
    ImuCtrl->ComplimentaryFilterConstant = 0.97;
 
    CFE_MSG_Init(CFE_MSG_PTR(ImuCtrl->RateTlm.TelemetryHeader), CFE_SB_ValueToMsgId(INITBL_GetIntConfig(IniTbl, CFG_IMU_RATE_TLM_MID)), sizeof(BERRY_IMU_RateTlm_t));
+
+   CFE_EVS_SendEvent (IMU_CTRL_SET_SENSOR_DELTA_TIME_EID, CFE_EVS_EventType_INFORMATION, 
+                      "IMU sensor sampling delta time changed from %u to %u milliseconds", ImuCtrl->SensorDeltaTime, ImuCtrl->SensorDeltaTime);
 
 } /* End IMU_CTRL_Constructor() */
 
@@ -111,7 +115,21 @@ void IMU_CTRL_ResetStatus(void)
 
 } /* End IMU_CTRL_ResetStatus() */
 
- 
+
+/******************************************************************************
+** Function: IMU_CTRL_InitImuInterfaceCmd
+**
+** Notes:
+**   1. Currently uses the default device filename defined in the JSON, but
+**      a parameter may be added.
+*/
+bool IMU_CTRL_InitImuInterfaceCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr)
+{
+
+   return IMU_I2C_InitializeInterface(INITBL_GetStrConfig(ImuCtrl->IniTbl, CFG_IMU_DEVICE_FILE));
+
+} /* End IMU_CTRL_InitImuInterfaceCmd() */
+
 /******************************************************************************
 ** Function: IMU_CTRL_SetSensorDeltaTimeCmd
 **
@@ -213,25 +231,29 @@ bool IMU_CTRL_SetGyroScaleFactorCmd(void* DataObjPtr, const CFE_MSG_Message_t *M
 */
 bool IMU_CTRL_ChildTask(CHILDMGR_Class_t* ChildMgr)
 {
+
+OS_printf("Before delay\n"); 
+   OS_TaskDelay(5000);
+OS_printf("After delay\n"); 
    
    IMU_I2C_ReadAccelerometer(ImuCtrl->AccelerometerRaw);
    IMU_I2C_ReadGyroscope(ImuCtrl->GyroRaw);
-
+OS_printf("Gyro raw X = %d\n", ImuCtrl->GyroRaw[0]);
    /* Convert Gyro raw to degrees per second */
    ImuCtrl->GyroRateX = (float) ImuCtrl->GyroRaw[0] * ImuCtrl->GyroScaleFactor;
    ImuCtrl->GyroRateY = (float) ImuCtrl->GyroRaw[1] * ImuCtrl->GyroScaleFactor;
    ImuCtrl->GyroRateZ = (float) ImuCtrl->GyroRaw[2] * ImuCtrl->GyroScaleFactor;
-
+OS_printf("Gyro rate X = %0.3f\n", ImuCtrl->GyroRateX);
    /* Calculate the angles from the gyro */
    ImuCtrl->GyroAngleX += ImuCtrl->GyroRateX * ImuCtrl->DeltaTime;
    ImuCtrl->GyroAngleY += ImuCtrl->GyroRateY * ImuCtrl->DeltaTime;
    ImuCtrl->GyroAngleZ += ImuCtrl->GyroRateZ * ImuCtrl->DeltaTime;
-
+OS_printf("Gyro X angle = %0.3f\n", ImuCtrl->GyroAngleX);
    /* TODO - Very algorithm. The raw counts have not been scaled prior to use below */
    /* Convert Accelerometer values to degrees */
    ImuCtrl->AccelerometerAngleX = (float) (atan2(ImuCtrl->AccelerometerRaw[1], ImuCtrl->AccelerometerRaw[2]) + PI) * RAD_TO_DEG;
    ImuCtrl->AccelerometerAngleY = (float) (atan2(ImuCtrl->AccelerometerRaw[2], ImuCtrl->AccelerometerRaw[0]) + PI) * RAD_TO_DEG;
-
+OS_printf("AccXangle = %0.3f\n", ImuCtrl->AccelerometerAngleX);
    /* Account for potential different mountings */
    #if IMU_MOUNT_UP == 1
    
@@ -262,6 +284,7 @@ bool IMU_CTRL_ChildTask(CHILDMGR_Class_t* ChildMgr)
                            
    ImuCtrl->FilterAngleY = ImuCtrl->ComplimentaryFilterConstant * (ImuCtrl->FilterAngleY + ImuCtrl->GyroRateY * ImuCtrl->DeltaTime) + 
                            (1.0 - ImuCtrl->ComplimentaryFilterConstant) * ImuCtrl->AccelerometerAngleY;
+OS_printf("CFangleX = %0.3f\n", ImuCtrl->FilterAngleX);
 
    /* Load and send rate telemetry */
    
@@ -272,6 +295,9 @@ bool IMU_CTRL_ChildTask(CHILDMGR_Class_t* ChildMgr)
    CFE_SB_TimeStampMsg(CFE_MSG_PTR(ImuCtrl->RateTlm.TelemetryHeader));
    CFE_SB_TransmitMsg(CFE_MSG_PTR(ImuCtrl->RateTlm.TelemetryHeader), true);
 
+   OS_printf("***BERRY_IMU*** Rate  = %0.3f, %0.3f, %0.3f\n", ImuCtrl->GyroRateX, ImuCtrl->GyroRateY, ImuCtrl->GyroRateZ);
+   OS_printf("***BERRY_IMU*** Angle = %0.3f, %0.3f, %0.3f\n", ImuCtrl->GyroAngleX, ImuCtrl->GyroAngleY, ImuCtrl->GyroAngleZ);
+   
    OS_TaskDelay(ImuCtrl->SensorDeltaTime);
    
    return true;

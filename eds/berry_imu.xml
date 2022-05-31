@@ -69,7 +69,8 @@
         <EntryList>
           <Entry name="ValidCmdCnt"    type="BASE_TYPES/uint16" />
           <Entry name="InvalidCmdCnt"  type="BASE_TYPES/uint16" />
-          <Entry name="ImuVersion"     type="BASE_TYPES/uint16" />
+          <Entry name="ImuVersion"     type="BASE_TYPES/uint8"  />
+          <Entry name="ImuEnabled"     type="BASE_TYPES/uint8"  />
           <Entry name="DeltaTime"      type="BASE_TYPES/uint32" />
           <Entry name="FilterConstant" type="BASE_TYPES/float"  />
           <Entry name="AccScaleFactor" type="BASE_TYPES/float"  />
@@ -138,6 +139,12 @@
         <EntryList>
           <Entry type="SetGyroScaleFactor_Payload" name="Payload" />
         </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="InitializeImuInterface" baseType="CommandBase" shortDescription="Detect and enable IMU I2C interface">
+        <ConstraintSet>
+          <ValueConstraint entry="Sec.FunctionCode" value="${OSK_C_FW/APP_BASE_CC} + 4" />
+        </ConstraintSet>
       </ContainerDataType>
 
 

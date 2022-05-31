@@ -160,6 +160,16 @@ void IMU_CTRL_ResetStatus(void);
 
 
 /******************************************************************************
+** Function: IMU_CTRL_InitImuInterfaceCmd
+**
+** Notes:
+**   1. Currently uses the default device filename defined in the JSON, but
+**      a parameter may be added.
+*/
+bool IMU_CTRL_InitImuInterfaceCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr);
+
+
+/******************************************************************************
 ** Function: IMU_CTRL_SetSensorDeltaTimeCmd
 **
 ** Notes:

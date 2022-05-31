@@ -168,6 +168,7 @@ static void SendHousekeepingPkt(void)
    */ 
    
    HkTlmPayload->ImuVersion     = BerryImu.ImuCtrl.ImuI2c.Version;
+   HkTlmPayload->ImuEnabled     = BerryImu.ImuCtrl.ImuI2c.Enabled;
    HkTlmPayload->DeltaTime      = BerryImu.ImuCtrl.SensorDeltaTime;
    HkTlmPayload->FilterConstant = BerryImu.ImuCtrl.ComplimentaryFilterConstant;
    HkTlmPayload->AccScaleFactor = BerryImu.ImuCtrl.AccelerometerScaleFactor;
@@ -237,6 +238,7 @@ static int32 InitApp(void)
       CMDMGR_RegisterFunc(CMDMGR_OBJ, BERRY_IMU_SET_ACCELEROMETER_SCALE_FACTOR_CC, IMU_CTRL_OBJ, IMU_CTRL_SetAccelerometerScaleFactorCmd,  sizeof(BERRY_IMU_SetAccelerometerScaleFactor_Payload_t));
       CMDMGR_RegisterFunc(CMDMGR_OBJ, BERRY_IMU_SET_FILTER_CONSTANT_CC,            IMU_CTRL_OBJ, IMU_CTRL_SetFilterConstantCmd,   sizeof(BERRY_IMU_SetFilterConstant_Payload_t));
       CMDMGR_RegisterFunc(CMDMGR_OBJ, BERRY_IMU_SET_GYRO_SCALE_FACTOR_CC,          IMU_CTRL_OBJ, IMU_CTRL_SetGyroScaleFactorCmd,  sizeof(BERRY_IMU_SetGyroScaleFactor_Payload_t));
+      CMDMGR_RegisterFunc(CMDMGR_OBJ, BERRY_IMU_INITIALIZE_IMU_INTERFACE_CC,       IMU_CTRL_OBJ, IMU_CTRL_InitImuInterfaceCmd,    0);
       
       CFE_MSG_Init(CFE_MSG_PTR(BerryImu.HkTlm.TelemetryHeader), CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, CFG_APP_HK_TLM_MID)), sizeof(BERRY_IMU_HkTlm_t));
    
@@ -264,7 +266,7 @@ static int32 ProcessCommands(void)
    int32  RetStatus = CFE_ES_RunStatus_APP_RUN;
    int32  SysStatus;
 
-   CFE_SB_Buffer_t* SbBufPtr;
+   CFE_SB_Buffer_t  *SbBufPtr;
    CFE_SB_MsgId_t   MsgId = CFE_SB_INVALID_MSG_ID;
    
 

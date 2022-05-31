@@ -1,0 +1,30 @@
+{ "app": {
+   
+   "title": "BERRY_IMU",
+   "version": "0.1.0",
+   "owner": "OpenSatkit",
+   "url": "https://github.com/OpenSatKit-Apps/berry_imu",
+
+   "description": [
+      "GPIO Demo is part of OSK's Pi-Sat distribution https://github.com/OpenSatKit/pi-sat/. It provides",
+      "an example app for interfacing to the Raspberry Pi GPIO. It's intentionally small with minimal",
+      "functionality so it can be used as a starting point for user apps"
+   ],
+
+   "cfs": {
+      "cfe-type": "CFE_APP",
+      "obj-file": "berry_imu",
+      "entry-symbol": "BERRY_IMU_AppMain",
+      "name": "BERRY_IMU",
+      "priority": 70,
+      "stack": 32768,
+      "load_addr": 0,
+      "exception-action": 0,
+      "app-framework": "osk",
+      "tables": [],
+      "cmd-mid": "GPIO_DEMO_CMD_MID"
+   }
+   
+}}
+
+
