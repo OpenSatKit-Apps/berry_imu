@@ -6,9 +6,8 @@
    "url": "https://github.com/OpenSatKit-Apps/berry_imu",
 
    "description": [
-      "GPIO Demo is part of OSK's Pi-Sat distribution https://github.com/OpenSatKit/pi-sat/. It provides",
-      "an example app for interfacing to the Raspberry Pi GPIO. It's intentionally small with minimal",
-      "functionality so it can be used as a starting point for user apps"
+      "This app interfaces to the Ozzmaker Berry IMU https://github.com/ozzmaker/BerryIMU",
+      "on a Raspberry Pi. It also serves as an example of using the I2C interface."
    ],
 
    "cfs": {
@@ -21,7 +20,7 @@
       "load_addr": 0,
       "exception-action": 0,
       "app-framework": "osk",
-      "tables": [],
+      "tables": ["berry_imu_ini.json"],
       "cmd-mid": "GPIO_DEMO_CMD_MID"
    }
    
