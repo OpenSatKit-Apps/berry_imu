@@ -1,19 +1,16 @@
 /*
-**  Copyright 2022 Open STEMware Foundation
+**  Copyright 2022 bitValence, Inc.
 **  All Rights Reserved.
 **
-**  This program is free software; you can modify and/or redistribute it under
-**  the terms of the GNU Affero General Public License as published by the Free
-**  Software Foundation; version 3 with attribution addendums as found in the
-**  LICENSE.txt
+**  This program is free software; you can modify and/or redistribute it
+**  under the terms of the GNU Affero General Public License
+**  as published by the Free Software Foundation; version 3 with
+**  attribution addendums as found in the LICENSE.txt
 **
-**  This program is distributed in the hope that it will be useful, but WITHOUT
-**  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-**  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
-**  details.
-**  
-**  This program may also be used under the terms of a commercial or enterprise
-**  edition license of cFSAT if purchased from the copyright holder.
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**  GNU Affero General Public License for more details.
 **
 **  Purpose:
 **    Implement the Berry IMU control and data processing
@@ -82,10 +79,9 @@ void IMU_CTRL_Constructor(IMU_CTRL_Class_t *ImuCtrlPtr, INITBL_Class_t* IniTbl)
    ImuCtrl->SensorDeltaTime = INITBL_GetIntConfig(IniTbl, CFG_IMU_SENSOR_DELTA_TIME);
    ImuCtrl->DeltaTime = (float)ImuCtrl->SensorDeltaTime / 1000.0; 
 
-   // TODO - Define in JSON ini file after float support added
-   ImuCtrl->AccelerometerScaleFactor    = 0.0573;
-   ImuCtrl->GyroScaleFactor             = 0.07;
-   ImuCtrl->ComplimentaryFilterConstant = 0.97;
+   ImuCtrl->AccelerometerScaleFactor    = INITBL_GetFltConfig(IniTbl, CFG_IMU_ACCEL_SCALE_FACTOR);
+   ImuCtrl->GyroScaleFactor             = INITBL_GetFltConfig(IniTbl, CFG_IMU_GYRO_SCALE_FACTOR);
+   ImuCtrl->ComplimentaryFilterConstant = INITBL_GetFltConfig(IniTbl, CFG_IMU_COMP_FILTER_CONSTANT);
 
    CFE_MSG_Init(CFE_MSG_PTR(ImuCtrl->RateTlm.TelemetryHeader), CFE_SB_ValueToMsgId(INITBL_GetIntConfig(IniTbl, CFG_IMU_RATE_TLM_MID)), sizeof(BERRY_IMU_RateTlm_t));
 
@@ -93,133 +89,6 @@ void IMU_CTRL_Constructor(IMU_CTRL_Class_t *ImuCtrlPtr, INITBL_Class_t* IniTbl)
                       "IMU sensor sampling delta time changed from %u to %u milliseconds", ImuCtrl->SensorDeltaTime, ImuCtrl->SensorDeltaTime);
 
 } /* End IMU_CTRL_Constructor() */
-
-
-
-/******************************************************************************
-** Function: IMU_CTRL_ResetStatus
-**
-** Reset counters and status flags to a known reset state.
-**
-** Notes:
-**   1. Any counter or variable that is reported in HK telemetry that doesn't
-**      change the functional behavior should be reset.
-**
-*/
-void IMU_CTRL_ResetStatus(void)
-{
-
-   IMU_I2C_ResetStatus();
-   
-   return;
-
-} /* End IMU_CTRL_ResetStatus() */
-
-
-/******************************************************************************
-** Function: IMU_CTRL_InitImuInterfaceCmd
-**
-** Notes:
-**   1. Currently uses the default device filename defined in the JSON, but
-**      a parameter may be added.
-*/
-bool IMU_CTRL_InitImuInterfaceCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr)
-{
-
-   return IMU_I2C_InitializeInterface(INITBL_GetStrConfig(ImuCtrl->IniTbl, CFG_IMU_DEVICE_FILE));
-
-} /* End IMU_CTRL_InitImuInterfaceCmd() */
-
-/******************************************************************************
-** Function: IMU_CTRL_SetSensorDeltaTimeCmd
-**
-** Notes:
-**   1. No limits placed on commanded value.
-**
-*/
-bool IMU_CTRL_SetSensorDeltaTimeCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr)
-{
-   
-   const BERRY_IMU_SetSensorDeltaTime_Payload_t *Cmd = CMDMGR_PAYLOAD_PTR(MsgPtr, BERRY_IMU_SetSensorDeltaTime_t);
-  
-   CFE_EVS_SendEvent (IMU_CTRL_SET_SENSOR_DELTA_TIME_EID, CFE_EVS_EventType_INFORMATION, 
-                      "IMU sensor sampling delta time changed from %u to %u milliseconds", ImuCtrl->SensorDeltaTime, Cmd->SensorDeltaTime);
-
-   ImuCtrl->SensorDeltaTime = Cmd->SensorDeltaTime;
-   ImuCtrl->DeltaTime = (float)ImuCtrl->SensorDeltaTime / 1000.0; 
-  
-   return true;
-   
-} /* End IMU_CTRL_SetSensorDeltaTimeCmd() */
-
-
-/******************************************************************************
-** Function: IMU_CTRL_SetAccelerometerScaleFactorCmd
-**
-** Notes:
-**   1. No limits placed on commanded value.
-**
-*/
-bool IMU_CTRL_SetAccelerometerScaleFactorCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr)
-{
-   
-   const BERRY_IMU_SetAccelerometerScaleFactor_Payload_t *Cmd = CMDMGR_PAYLOAD_PTR(MsgPtr, BERRY_IMU_SetAccelerometerScaleFactor_t);
-  
-   CFE_EVS_SendEvent (IMU_CTRL_SET_ACCELEROMETER_SCALE_FACTOR_EID, CFE_EVS_EventType_INFORMATION, 
-                      "IMU accelerometer scale factor changed from %0.6f to %0.6f milliseconds", 
-                      ImuCtrl->AccelerometerScaleFactor, Cmd->ScaleFactor);
-                      
-   ImuCtrl->AccelerometerScaleFactor = Cmd->ScaleFactor;
-  
-   return true;
-   
-} /* End IMU_CTRL_SetAccelerometerScaleFactorCmd() */
-
-
-/******************************************************************************
-** Function: IMU_CTRL_SetFilterConstantCmd
-**
-** Notes:
-**   1. No limits placed on commanded value.
-**
-*/
-bool IMU_CTRL_SetFilterConstantCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr)
-{
-   
-   const BERRY_IMU_SetFilterConstant_Payload_t *Cmd = CMDMGR_PAYLOAD_PTR(MsgPtr, BERRY_IMU_SetFilterConstant_t);
-  
-   CFE_EVS_SendEvent (IMU_CTRL_SET_FILTER_CONSTANT_EID, CFE_EVS_EventType_INFORMATION,
-                     "IMU complimentary filter constant changed from  %0.6f to %0.6f", 
-                     ImuCtrl->ComplimentaryFilterConstant, Cmd->ComplimentaryConstant);
-
-   ImuCtrl->ComplimentaryFilterConstant = Cmd->ComplimentaryConstant;  
-  
-   return true;
-   
-} /* End IMU_CTRL_SetFilterConstantCmd() */
-
-
-/******************************************************************************
-** Function: IMU_CTRL_SetGyroScaleFactorCmd
-**
-** Notes:
-**   1. No limits placed on commanded value.
-**
-*/
-bool IMU_CTRL_SetGyroScaleFactorCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr)
-{
-   
-   const BERRY_IMU_SetGyroScaleFactor_Payload_t *Cmd = CMDMGR_PAYLOAD_PTR(MsgPtr, BERRY_IMU_SetGyroScaleFactor_t);
-  
-   CFE_EVS_SendEvent (IMU_CTRL_SET_GYRO_SCALE_FACTOR_EID, CFE_EVS_EventType_INFORMATION, 
-                      "IMU gyro scale factor changed from %0.6f to %0.6f milliseconds", 
-                      ImuCtrl->GyroScaleFactor, Cmd->ScaleFactor);
-                      
-   ImuCtrl->GyroScaleFactor = Cmd->ScaleFactor;
-  
-   return true;   
-   
-} /* End IMU_CTRL_SetGyroSCaleFactorCmd() */
 
 
 /******************************************************************************
@@ -303,5 +172,132 @@ OS_printf("CFangleX = %0.3f\n", ImuCtrl->FilterAngleX);
    return true;
 
 } /* End IMU_CTRL_ChildTask() */
+
+
+/******************************************************************************
+** Function: IMU_CTRL_InitImuInterfaceCmd
+**
+** Notes:
+**   1. Currently uses the default device filename defined in the JSON, but
+**      a parameter may be added.
+*/
+bool IMU_CTRL_InitImuInterfaceCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr)
+{
+
+   return IMU_I2C_InitializeInterface(INITBL_GetStrConfig(ImuCtrl->IniTbl, CFG_IMU_DEVICE_FILE));
+
+} /* End IMU_CTRL_InitImuInterfaceCmd() */
+
+
+/******************************************************************************
+** Function: IMU_CTRL_ResetStatus
+**
+** Reset counters and status flags to a known reset state.
+**
+** Notes:
+**   1. Any counter or variable that is reported in HK telemetry that doesn't
+**      change the functional behavior should be reset.
+**
+*/
+void IMU_CTRL_ResetStatus(void)
+{
+
+   IMU_I2C_ResetStatus();
+   
+   return;
+
+} /* End IMU_CTRL_ResetStatus() */
+
+
+/******************************************************************************
+** Function: IMU_CTRL_SetAccelerometerScaleFactorCmd
+**
+** Notes:
+**   1. No limits placed on commanded value.
+**
+*/
+bool IMU_CTRL_SetAccelerometerScaleFactorCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr)
+{
+   
+   const BERRY_IMU_SetAccelerometerScaleFactor_Payload_t *Cmd = CMDMGR_PAYLOAD_PTR(MsgPtr, BERRY_IMU_SetAccelerometerScaleFactor_t);
+  
+   CFE_EVS_SendEvent (IMU_CTRL_SET_ACCELEROMETER_SCALE_FACTOR_EID, CFE_EVS_EventType_INFORMATION, 
+                      "IMU accelerometer scale factor changed from %0.6f to %0.6f milliseconds", 
+                      ImuCtrl->AccelerometerScaleFactor, Cmd->ScaleFactor);
+                      
+   ImuCtrl->AccelerometerScaleFactor = Cmd->ScaleFactor;
+  
+   return true;
+   
+} /* End IMU_CTRL_SetAccelerometerScaleFactorCmd() */
+
+
+/******************************************************************************
+** Function: IMU_CTRL_SetFilterConstantCmd
+**
+** Notes:
+**   1. No limits placed on commanded value.
+**
+*/
+bool IMU_CTRL_SetFilterConstantCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr)
+{
+   
+   const BERRY_IMU_SetFilterConstant_Payload_t *Cmd = CMDMGR_PAYLOAD_PTR(MsgPtr, BERRY_IMU_SetFilterConstant_t);
+  
+   CFE_EVS_SendEvent (IMU_CTRL_SET_FILTER_CONSTANT_EID, CFE_EVS_EventType_INFORMATION,
+                     "IMU complimentary filter constant changed from  %0.6f to %0.6f", 
+                     ImuCtrl->ComplimentaryFilterConstant, Cmd->ComplimentaryConstant);
+
+   ImuCtrl->ComplimentaryFilterConstant = Cmd->ComplimentaryConstant;  
+  
+   return true;
+   
+} /* End IMU_CTRL_SetFilterConstantCmd() */
+
+
+/******************************************************************************
+** Function: IMU_CTRL_SetGyroScaleFactorCmd
+**
+** Notes:
+**   1. No limits placed on commanded value.
+**
+*/
+bool IMU_CTRL_SetGyroScaleFactorCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr)
+{
+   
+   const BERRY_IMU_SetGyroScaleFactor_Payload_t *Cmd = CMDMGR_PAYLOAD_PTR(MsgPtr, BERRY_IMU_SetGyroScaleFactor_t);
+  
+   CFE_EVS_SendEvent (IMU_CTRL_SET_GYRO_SCALE_FACTOR_EID, CFE_EVS_EventType_INFORMATION, 
+                      "IMU gyro scale factor changed from %0.6f to %0.6f milliseconds", 
+                      ImuCtrl->GyroScaleFactor, Cmd->ScaleFactor);
+                      
+   ImuCtrl->GyroScaleFactor = Cmd->ScaleFactor;
+  
+   return true;   
+   
+} /* End IMU_CTRL_SetGyroSCaleFactorCmd() */
+
+
+/******************************************************************************
+** Function: IMU_CTRL_SetSensorDeltaTimeCmd
+**
+** Notes:
+**   1. No limits placed on commanded value.
+**
+*/
+bool IMU_CTRL_SetSensorDeltaTimeCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr)
+{
+   
+   const BERRY_IMU_SetSensorDeltaTime_Payload_t *Cmd = CMDMGR_PAYLOAD_PTR(MsgPtr, BERRY_IMU_SetSensorDeltaTime_t);
+  
+   CFE_EVS_SendEvent (IMU_CTRL_SET_SENSOR_DELTA_TIME_EID, CFE_EVS_EventType_INFORMATION, 
+                      "IMU sensor sampling delta time changed from %u to %u milliseconds", ImuCtrl->SensorDeltaTime, Cmd->SensorDeltaTime);
+
+   ImuCtrl->SensorDeltaTime = Cmd->SensorDeltaTime;
+   ImuCtrl->DeltaTime = (float)ImuCtrl->SensorDeltaTime / 1000.0; 
+  
+   return true;
+   
+} /* End IMU_CTRL_SetSensorDeltaTimeCmd() */
 
 

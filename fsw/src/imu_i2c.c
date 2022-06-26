@@ -1,4 +1,17 @@
 /*
+**  Copyright 2022 bitValence, Inc.
+**  All Rights Reserved.
+**
+**  This program is free software; you can modify and/or redistribute it
+**  under the terms of the GNU Affero General Public License
+**  as published by the Free Software Foundation; version 3 with
+**  attribution addendums as found in the LICENSE.txt
+**
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**  GNU Affero General Public License for more details.
+**
 **  Purpose:
 **    Interface to ozzmaker Berry IMU using I2C
 **
@@ -154,23 +167,6 @@ bool IMU_I2C_InitializeInterface(const char *DevFilename)
 
 
 /******************************************************************************
-** Function: IMU_I2C_ResetStatus
-**
-** Reset counters and status flags to a known reset state.
-**
-** Notes:IMU_CTRL_InitImuInterfaceCmd
-**   1. Any counter or variable that is reported in HK telemetry that doesn't
-**      change the functional behavior should be reset.
-**
-*/
-void IMU_I2C_ResetStatus(void)
-{
-
-   return;
-   
-} /* End IMU_I2C_ResetStatus() */
-
-/******************************************************************************
 ** Function: IMU_I2C_ReadAccelerometer
 **
 ** Read Accelerometer data
@@ -267,112 +263,21 @@ bool IMU_I2C_ReadMagnetometer(int MagData[])
 
 
 /******************************************************************************
-** Function: ReadDataBlock
+** Function: IMU_I2C_ResetStatus
 **
-** Read a block of data from a sensor
+** Reset counters and status flags to a known reset state.
 **
-** Notes:
-**   None
-**
-*/
-static bool ReadDataBlock(uint8_t Command, uint8_t Size, uint8_t *Data)
-{
-
-   return (i2c_smbus_read_i2c_block_data(ImuI2c->File, Command, Size, Data) == Size);
-
-} /* End ReadDataBlock() */
-
-
-/******************************************************************************
-** Function: SelectDevice
-**
-** Selects a device using the supplied address
-**
-** Notes:
-**   1. A negative ioctl() value is an error
+** Notes:IMU_CTRL_InitImuInterfaceCmd
+**   1. Any counter or variable that is reported in HK telemetry that doesn't
+**      change the functional behavior should be reset.
 **
 */
-static bool SelectDevice(int Address)
+void IMU_I2C_ResetStatus(void)
 {
 
-   return (ioctl(ImuI2c->File, I2C_SLAVE, Address) >= 0);
-
-} /* End SelectDevice() */
-
-
-/******************************************************************************
-** Function: WriteAcceReg
-**
-** Write to an accelerometer register
-**
-** Notes:
-**   1. A negative i2c_smbus_write_byte_data() value is an error
-**
-*/
-static bool WriteAccReg(uint8_t Register, uint8_t Value)
-{
-
-   bool RetStatus = false;
+   return;
    
-   if (SelectDevice(ImuI2c->Accelerometer.Address))
-   {
-
-      RetStatus = (i2c_smbus_write_byte_data(ImuI2c->File, Register, Value) >= 0);
-   }
-
-   return RetStatus;
-   
-} /* End WriteAccReg() */
-
-
-/******************************************************************************
-** Function: WriteGyrReg
-**
-** Write to an gyroscope register
-**
-** Notes:
-**   1. A negative i2c_smbus_write_byte_data() value is an error
-**
-*/
-static bool WriteGyrReg(uint8_t Register, uint8_t Value)
-{
-
-   bool RetStatus = false;
-   
-   if (SelectDevice(ImuI2c->Gyroscope.Address))
-   {
-
-      RetStatus = (i2c_smbus_write_byte_data(ImuI2c->File, Register, Value) >=0);
-   }
-
-   return RetStatus;
-
-} /* End WriteGyrReg() */
-
-
-/******************************************************************************
-** Function: WriteMagReg
-**
-** Write to a magnetometer register
-**
-** Notes:
-**   1. A negative i2c_smbus_write_byte_data() value is an error
-**
-*/
-static bool WriteMagReg(uint8_t Register, uint8_t Value)
-{
-
-   bool RetStatus = false;
-   
-   if (SelectDevice(ImuI2c->Magnetometer.Address))
-   {
-
-      RetStatus = (i2c_smbus_write_byte_data(ImuI2c->File, Register, Value) >=0);
-   }
-	
-   return RetStatus;
-
-} /* End WriteMagReg() */
+} /* End IMU_I2C_ResetStatus() */
 
 
 /******************************************************************************
@@ -562,4 +467,113 @@ static bool EnableImu(void)
    
    
 } /* End EnableImu() */
+
+
+/******************************************************************************
+** Function: ReadDataBlock
+**
+** Read a block of data from a sensor
+**
+** Notes:
+**   None
+**
+*/
+static bool ReadDataBlock(uint8_t Command, uint8_t Size, uint8_t *Data)
+{
+
+   return (i2c_smbus_read_i2c_block_data(ImuI2c->File, Command, Size, Data) == Size);
+
+} /* End ReadDataBlock() */
+
+
+/******************************************************************************
+** Function: SelectDevice
+**
+** Selects a device using the supplied address
+**
+** Notes:
+**   1. A negative ioctl() value is an error
+**
+*/
+static bool SelectDevice(int Address)
+{
+
+   return (ioctl(ImuI2c->File, I2C_SLAVE, Address) >= 0);
+
+} /* End SelectDevice() */
+
+
+/******************************************************************************
+** Function: WriteAcceReg
+**
+** Write to an accelerometer register
+**
+** Notes:
+**   1. A negative i2c_smbus_write_byte_data() value is an error
+**
+*/
+static bool WriteAccReg(uint8_t Register, uint8_t Value)
+{
+
+   bool RetStatus = false;
+   
+   if (SelectDevice(ImuI2c->Accelerometer.Address))
+   {
+
+      RetStatus = (i2c_smbus_write_byte_data(ImuI2c->File, Register, Value) >= 0);
+   }
+
+   return RetStatus;
+   
+} /* End WriteAccReg() */
+
+
+/******************************************************************************
+** Function: WriteGyrReg
+**
+** Write to an gyroscope register
+**
+** Notes:
+**   1. A negative i2c_smbus_write_byte_data() value is an error
+**
+*/
+static bool WriteGyrReg(uint8_t Register, uint8_t Value)
+{
+
+   bool RetStatus = false;
+   
+   if (SelectDevice(ImuI2c->Gyroscope.Address))
+   {
+
+      RetStatus = (i2c_smbus_write_byte_data(ImuI2c->File, Register, Value) >=0);
+   }
+
+   return RetStatus;
+
+} /* End WriteGyrReg() */
+
+
+/******************************************************************************
+** Function: WriteMagReg
+**
+** Write to a magnetometer register
+**
+** Notes:
+**   1. A negative i2c_smbus_write_byte_data() value is an error
+**
+*/
+static bool WriteMagReg(uint8_t Register, uint8_t Value)
+{
+
+   bool RetStatus = false;
+   
+   if (SelectDevice(ImuI2c->Magnetometer.Address))
+   {
+
+      RetStatus = (i2c_smbus_write_byte_data(ImuI2c->File, Register, Value) >=0);
+   }
+	
+   return RetStatus;
+
+} /* End WriteMagReg() */
 

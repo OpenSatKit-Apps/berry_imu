@@ -1,19 +1,16 @@
 /*
-**  Copyright 2022 Open STEMware Foundation
+**  Copyright 2022 bitValence, Inc.
 **  All Rights Reserved.
 **
-**  This program is free software; you can modify and/or redistribute it under
-**  the terms of the GNU Affero General Public License as published by the Free
-**  Software Foundation; version 3 with attribution addendums as found in the
-**  LICENSE.txt
+**  This program is free software; you can modify and/or redistribute it
+**  under the terms of the GNU Affero General Public License
+**  as published by the Free Software Foundation; version 3 with
+**  attribution addendums as found in the LICENSE.txt
 **
-**  This program is distributed in the hope that it will be useful, but WITHOUT
-**  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-**  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
-**  details.
-**  
-**  This program may also be used under the terms of a commercial or enterprise
-**  edition license of cFSAT if purchased from the copyright holder.
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**  GNU Affero General Public License for more details.
 **
 **  Purpose:
 **    Implement the Berry IMU application
@@ -152,35 +149,6 @@ bool BERRY_IMU_ResetAppCmd(void* ObjDataPtr, const CFE_MSG_Message_t *MsgPtr)
 
 
 /******************************************************************************
-** Function: SendHousekeepingPkt
-**
-*/
-static void SendHousekeepingPkt(void)
-{
-   
-   BERRY_IMU_HkTlm_Payload_t *HkTlmPayload = &BerryImu.HkTlm.Payload;
-   
-   HkTlmPayload->ValidCmdCnt   = BerryImu.CmdMgr.ValidCmdCnt;
-   HkTlmPayload->InvalidCmdCnt = BerryImu.CmdMgr.InvalidCmdCnt;
-
-   /*
-   ** Controller 
-   */ 
-   
-   HkTlmPayload->ImuVersion     = BerryImu.ImuCtrl.ImuI2c.Version;
-   HkTlmPayload->ImuEnabled     = BerryImu.ImuCtrl.ImuI2c.Enabled;
-   HkTlmPayload->DeltaTime      = BerryImu.ImuCtrl.SensorDeltaTime;
-   HkTlmPayload->FilterConstant = BerryImu.ImuCtrl.ComplimentaryFilterConstant;
-   HkTlmPayload->AccScaleFactor = BerryImu.ImuCtrl.AccelerometerScaleFactor;
-   HkTlmPayload->GyrScaleFactor = BerryImu.ImuCtrl.GyroScaleFactor;
-   
-   CFE_SB_TimeStampMsg(CFE_MSG_PTR(BerryImu.HkTlm.TelemetryHeader));
-   CFE_SB_TransmitMsg(CFE_MSG_PTR(BerryImu.HkTlm.TelemetryHeader), true);
-   
-} /* End SendHousekeepingPkt() */
-
-
-/******************************************************************************
 ** Function: InitApp
 **
 */
@@ -202,7 +170,7 @@ static int32 InitApp(void)
       BerryImu.PerfId    = INITBL_GetIntConfig(INITBL_OBJ, CFG_APP_PERF_ID);
       BerryImu.CmdMid    = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, CFG_APP_CMD_MID));
       BerryImu.SendHkMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, CFG_APP_SEND_HK_MID));
-      
+
       CFE_ES_PerfLogEntry(BerryImu.PerfId);
 
       /* Constructor sends error events */    
@@ -321,4 +289,35 @@ static int32 ProcessCommands(void)
    return RetStatus;
 
 } /* End ProcessCommands() */
+
+
+/******************************************************************************
+** Function: SendHousekeepingPkt
+**
+*/
+static void SendHousekeepingPkt(void)
+{
+   
+   BERRY_IMU_HkTlm_Payload_t *HkTlmPayload = &BerryImu.HkTlm.Payload;
+   
+   HkTlmPayload->ValidCmdCnt   = BerryImu.CmdMgr.ValidCmdCnt;
+   HkTlmPayload->InvalidCmdCnt = BerryImu.CmdMgr.InvalidCmdCnt;
+
+   /*
+   ** Controller 
+   */ 
+   
+   HkTlmPayload->ImuVersion     = BerryImu.ImuCtrl.ImuI2c.Version;
+   HkTlmPayload->ImuEnabled     = BerryImu.ImuCtrl.ImuI2c.Enabled;
+   HkTlmPayload->DeltaTime      = BerryImu.ImuCtrl.SensorDeltaTime;
+   HkTlmPayload->FilterConstant = BerryImu.ImuCtrl.ComplimentaryFilterConstant;
+   HkTlmPayload->AccScaleFactor = BerryImu.ImuCtrl.AccelerometerScaleFactor;
+   HkTlmPayload->GyrScaleFactor = BerryImu.ImuCtrl.GyroScaleFactor;
+   
+   CFE_SB_TimeStampMsg(CFE_MSG_PTR(BerryImu.HkTlm.TelemetryHeader));
+   CFE_SB_TransmitMsg(CFE_MSG_PTR(BerryImu.HkTlm.TelemetryHeader), true);
+   
+} /* End SendHousekeepingPkt() */
+
+
 

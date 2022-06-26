@@ -1,19 +1,16 @@
 /*
-**  Copyright 2022 Open STEMware Foundation
+**  Copyright 2022 bitValence, Inc.
 **  All Rights Reserved.
 **
-**  This program is free software; you can modify and/or redistribute it under
-**  the terms of the GNU Affero General Public License as published by the Free
-**  Software Foundation; version 3 with attribution addendums as found in the
-**  LICENSE.txt
+**  This program is free software; you can modify and/or redistribute it
+**  under the terms of the GNU Affero General Public License
+**  as published by the Free Software Foundation; version 3 with
+**  attribution addendums as found in the LICENSE.txt
 **
-**  This program is distributed in the hope that it will be useful, but WITHOUT
-**  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-**  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
-**  details.
-**  
-**  This program may also be used under the terms of a commercial or enterprise
-**  edition license of cFSAT if purchased from the copyright holder.
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**  GNU Affero General Public License for more details.
 **
 **  Purpose:
 **    Define application configurations for the Berry IMU application
@@ -52,8 +49,8 @@
 ** 1.0 - Initial release
 */
 
-#define  BERRY_IMU_MAJOR_VER   1
-#define  BERRY_IMU_MINOR_VER   0
+#define  BERRY_IMU_MAJOR_VER   0
+#define  BERRY_IMU_MINOR_VER   9
 
 
 /******************************************************************************
@@ -94,6 +91,10 @@
 #define CFG_IMU_DEVICE_FILE        IMU_DEVICE_FILE
 #define CFG_IMU_SENSOR_DELTA_TIME  IMU_SENSOR_DELTA_TIME 
 
+#define CFG_IMU_ACCEL_SCALE_FACTOR   IMU_ACCEL_SCALE_FACTOR 
+#define CFG_IMU_GYRO_SCALE_FACTOR    IMU_GYRO_SCALE_FACTOR 
+#define CFG_IMU_COMP_FILTER_CONSTANT IMU_COMP_FILTER_CONSTANT 
+
 #define APP_CONFIG(XX) \
    XX(APP_CFE_NAME,char*) \
    XX(APP_PERF_ID,uint32) \
@@ -109,6 +110,9 @@
    XX(CHILD_PRIORITY,uint32) \
    XX(IMU_DEVICE_FILE,char*) \
    XX(IMU_SENSOR_DELTA_TIME,uint32) \
+   XX(IMU_ACCEL_SCALE_FACTOR,float) \
+   XX(IMU_GYRO_SCALE_FACTOR,float) \
+   XX(IMU_COMP_FILTER_CONSTANT,float) \
       
 DECLARE_ENUM(Config,APP_CONFIG)
 

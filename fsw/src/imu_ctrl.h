@@ -1,19 +1,16 @@
 /*
-**  Copyright 2022 Open STEMware Foundation
+**  Copyright 2022 bitValence, Inc.
 **  All Rights Reserved.
 **
-**  This program is free software; you can modify and/or redistribute it under
-**  the terms of the GNU Affero General Public License as published by the Free
-**  Software Foundation; version 3 with attribution addendums as found in the
-**  LICENSE.txt
+**  This program is free software; you can modify and/or redistribute it
+**  under the terms of the GNU Affero General Public License
+**  as published by the Free Software Foundation; version 3 with
+**  attribution addendums as found in the LICENSE.txt
 **
-**  This program is distributed in the hope that it will be useful, but WITHOUT
-**  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-**  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
-**  details.
-**  
-**  This program may also be used under the terms of a commercial or enterprise
-**  edition license of cFSAT if purchased from the copyright holder.
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**  GNU Affero General Public License for more details.
 **
 **  Purpose:
 **    Define IMU Controller class
@@ -147,16 +144,10 @@ void IMU_CTRL_Constructor(IMU_CTRL_Class_t *ImuCtrlPtr, INITBL_Class_t* IniTbl);
 
 
 /******************************************************************************
-** Function: IMU_CTRL_ResetStatus
-**
-** Reset counters and status flags to a known reset state.
-**
-** Notes:
-**   1. Any counter or variable that is reported in HK telemetry that doesn't
-**      change the functional behavior should be reset.
+** Function: IMU_CTRL_ChildTask
 **
 */
-void IMU_CTRL_ResetStatus(void);
+bool IMU_CTRL_ChildTask(CHILDMGR_Class_t* ChildMgr);
 
 
 /******************************************************************************
@@ -170,13 +161,16 @@ bool IMU_CTRL_InitImuInterfaceCmd(void* DataObjPtr, const CFE_MSG_Message_t *Msg
 
 
 /******************************************************************************
-** Function: IMU_CTRL_SetSensorDeltaTimeCmd
+** Function: IMU_CTRL_ResetStatus
+**
+** Reset counters and status flags to a known reset state.
 **
 ** Notes:
-**   1. No limits placed on commanded value.
+**   1. Any counter or variable that is reported in HK telemetry that doesn't
+**      change the functional behavior should be reset.
 **
 */
-bool IMU_CTRL_SetSensorDeltaTimeCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr);
+void IMU_CTRL_ResetStatus(void);
 
 
 /******************************************************************************
@@ -210,10 +204,13 @@ bool IMU_CTRL_SetGyroScaleFactorCmd(void* DataObjPtr, const CFE_MSG_Message_t *M
 
 
 /******************************************************************************
-** Function: IMU_CTRL_ChildTask
+** Function: IMU_CTRL_SetSensorDeltaTimeCmd
+**
+** Notes:
+**   1. No limits placed on commanded value.
 **
 */
-bool IMU_CTRL_ChildTask(CHILDMGR_Class_t* ChildMgr);
+bool IMU_CTRL_SetSensorDeltaTimeCmd(void* DataObjPtr, const CFE_MSG_Message_t *MsgPtr);
 
 
 #endif /* _imu_ctrl_ */

@@ -1,19 +1,16 @@
 /*
-**  Copyright 2022 Open STEMware Foundation
+**  Copyright 2022 bitValence, Inc.
 **  All Rights Reserved.
 **
-**  This program is free software; you can modify and/or redistribute it under
-**  the terms of the GNU Affero General Public License as published by the Free
-**  Software Foundation; version 3 with attribution addendums as found in the
-**  LICENSE.txt
+**  This program is free software; you can modify and/or redistribute it
+**  under the terms of the GNU Affero General Public License
+**  as published by the Free Software Foundation; version 3 with
+**  attribution addendums as found in the LICENSE.txt
 **
-**  This program is distributed in the hope that it will be useful, but WITHOUT
-**  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-**  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
-**  details.
-**  
-**  This program may also be used under the terms of a commercial or enterprise
-**  edition license of cFSAT if purchased from the copyright holder.
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**  GNU Affero General Public License for more details.
 **
 **  Purpose:
 **    Define the imu_i2c class. 
@@ -133,19 +130,6 @@ bool IMU_I2C_InitializeInterface(const char *DevFilename);
 
 
 /******************************************************************************
-** Function: IMU_I2C_ResetStatus
-**
-** Reset counters and status flags to a known reset state.
-**
-** Notes:
-**   1. Any counter or variable that is reported in HK telemetry that doesn't
-**      change the functional behavior should be reset.
-**
-*/
-void IMU_I2C_ResetStatus(void);
-
-
-/******************************************************************************
 ** Function: IMU_I2C_ReadAccelerometer
 **
 ** Read Accelerometer data
@@ -169,4 +153,30 @@ bool IMU_I2C_ReadAccelerometer(int AccData[]);
 bool IMU_I2C_ReadGyroscope(int GyroData[]);
 
 
+/******************************************************************************
+** Function: IMU_I2C_ReadMagnetometer
+**
+** Read Magnetometer data
+**
+** Notes:
+**   None
+**
+*/
+bool IMU_I2C_ReadMagnetometer(int MagData[]);
+
+
+/******************************************************************************
+** Function: IMU_I2C_ResetStatus
+**
+** Reset counters and status flags to a known reset state.
+**
+** Notes:
+**   1. Any counter or variable that is reported in HK telemetry that doesn't
+**      change the functional behavior should be reset.
+**
+*/
+void IMU_I2C_ResetStatus(void);
+
+
 #endif /* _imu_i2c_ */
+
