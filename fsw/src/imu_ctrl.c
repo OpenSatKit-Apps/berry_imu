@@ -157,9 +157,9 @@ OS_printf("CFangleX = %0.3f\n", ImuCtrl->FilterAngleX);
 
    /* Load and send rate telemetry */
    
-   ImuCtrl->RateTlm.Payload.RateX = ImuCtrl->GyroRateX;
-   ImuCtrl->RateTlm.Payload.RateY = ImuCtrl->GyroRateY;
-   ImuCtrl->RateTlm.Payload.RateZ = ImuCtrl->GyroRateZ;
+   ImuCtrl->RateTlm.Payload.X = ImuCtrl->GyroRateX;
+   ImuCtrl->RateTlm.Payload.Y = ImuCtrl->GyroRateY;
+   ImuCtrl->RateTlm.Payload.Z = ImuCtrl->GyroRateZ;
    
    CFE_SB_TimeStampMsg(CFE_MSG_PTR(ImuCtrl->RateTlm.TelemetryHeader));
    CFE_SB_TransmitMsg(CFE_MSG_PTR(ImuCtrl->RateTlm.TelemetryHeader), true);

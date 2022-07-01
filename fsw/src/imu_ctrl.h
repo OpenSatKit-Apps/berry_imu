@@ -33,7 +33,7 @@
 
 #include "app_cfg.h"
 #include "imu_i2c.h"
-
+#include "mqtt_gw_eds_typedefs.h"
 
 /***********************/
 /** Macro Definitions **/
@@ -118,9 +118,8 @@ typedef struct
    ** Telemetry Packets
    */
    
-   CFE_SB_MsgId_t       RateMid;
-   BERRY_IMU_RateTlm_t  RateTlm;
-
+   CFE_SB_MsgId_t      RateMid;
+   MQTT_GW_RateTlm_t   RateTlm;      //BERRY_IMU_RateTlm_t  RateTlm;
 
 } IMU_CTRL_Class_t;
 
