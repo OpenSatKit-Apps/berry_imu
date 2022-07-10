@@ -83,7 +83,9 @@ void IMU_CTRL_Constructor(IMU_CTRL_Class_t *ImuCtrlPtr, INITBL_Class_t* IniTbl)
    ImuCtrl->GyroScaleFactor             = INITBL_GetFltConfig(IniTbl, CFG_IMU_GYRO_SCALE_FACTOR);
    ImuCtrl->ComplimentaryFilterConstant = INITBL_GetFltConfig(IniTbl, CFG_IMU_COMP_FILTER_CONSTANT);
 
-   CFE_MSG_Init(CFE_MSG_PTR(ImuCtrl->RateTlm.TelemetryHeader), CFE_SB_ValueToMsgId(INITBL_GetIntConfig(IniTbl, CFG_IMU_RATE_TLM_MID)), sizeof(BERRY_IMU_RateTlm_t));
+   CFE_MSG_Init(CFE_MSG_PTR(ImuCtrl->RateTlm.TelemetryHeader), 
+                            CFE_SB_ValueToMsgId(INITBL_GetIntConfig(IniTbl, CFG_BERRY_IMU_RATE_TLM_TOPICID)),
+                            sizeof(BERRY_IMU_RateTlm_t));
 
    CFE_EVS_SendEvent (IMU_CTRL_SET_SENSOR_DELTA_TIME_EID, CFE_EVS_EventType_INFORMATION, 
                       "IMU sensor sampling delta time changed from %u to %u milliseconds", ImuCtrl->SensorDeltaTime, ImuCtrl->SensorDeltaTime);

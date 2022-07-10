@@ -168,8 +168,8 @@ static int32 InitApp(void)
    {
    
       BerryImu.PerfId    = INITBL_GetIntConfig(INITBL_OBJ, CFG_APP_PERF_ID);
-      BerryImu.CmdMid    = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, CFG_APP_CMD_MID));
-      BerryImu.SendHkMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, CFG_APP_SEND_HK_MID));
+      BerryImu.CmdMid    = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, CFG_BERRY_IMU_CMD_TOPICID));
+      BerryImu.SendHkMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, CFG_BERRY_IMU_SEND_HK_TOPICID));
 
       CFE_ES_PerfLogEntry(BerryImu.PerfId);
 
@@ -208,7 +208,7 @@ static int32 InitApp(void)
       CMDMGR_RegisterFunc(CMDMGR_OBJ, BERRY_IMU_SET_GYRO_SCALE_FACTOR_CC,          IMU_CTRL_OBJ, IMU_CTRL_SetGyroScaleFactorCmd,  sizeof(BERRY_IMU_SetGyroScaleFactor_Payload_t));
       CMDMGR_RegisterFunc(CMDMGR_OBJ, BERRY_IMU_INITIALIZE_IMU_INTERFACE_CC,       IMU_CTRL_OBJ, IMU_CTRL_InitImuInterfaceCmd,    0);
       
-      CFE_MSG_Init(CFE_MSG_PTR(BerryImu.HkTlm.TelemetryHeader), CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, CFG_APP_HK_TLM_MID)), sizeof(BERRY_IMU_HkTlm_t));
+      CFE_MSG_Init(CFE_MSG_PTR(BerryImu.HkTlm.TelemetryHeader), CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, CFG_BERRY_IMU_HK_TLM_TOPICID)), sizeof(BERRY_IMU_HkTlm_t));
    
       /*
       ** Application startup event message

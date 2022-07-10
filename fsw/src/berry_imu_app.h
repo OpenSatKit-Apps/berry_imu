@@ -17,6 +17,7 @@
 **
 **  Notes:
 **    1. This app uses code is based on the ozzmaker Berry IMU code. See ref #1.
+**    2. I2C must be enabled on the Pi
 **
 **  References:
 **    1. https://github.com/ozzmaker/BerryIMU
