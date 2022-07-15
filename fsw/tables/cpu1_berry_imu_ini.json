@@ -21,7 +21,7 @@
       "CHILD_PRIORITY":   80,
 
       "IMU_DEVICE_FILE" :      "/dev/i2c-1",
-      "IMU_SENSOR_DELTA_TIME": 500,
+      "IMU_SENSOR_DELTA_TIME": 50,
       
       "IMU_ACCEL_SCALE_FACTOR":   0.0573,
       "IMU_GYRO_SCALE_FACTOR":    0.07,

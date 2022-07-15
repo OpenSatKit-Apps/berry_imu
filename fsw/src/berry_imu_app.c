@@ -309,7 +309,7 @@ static void SendHousekeepingPkt(void)
    
    HkTlmPayload->ImuVersion     = BerryImu.ImuCtrl.ImuI2c.Version;
    HkTlmPayload->ImuEnabled     = BerryImu.ImuCtrl.ImuI2c.Enabled;
-   HkTlmPayload->DeltaTime      = BerryImu.ImuCtrl.SensorDeltaTime;
+   HkTlmPayload->DeltaTime      = BerryImu.ImuCtrl.SensorDeltaTimeMs;
    HkTlmPayload->FilterConstant = BerryImu.ImuCtrl.ComplimentaryFilterConstant;
    HkTlmPayload->AccScaleFactor = BerryImu.ImuCtrl.AccelerometerScaleFactor;
    HkTlmPayload->GyrScaleFactor = BerryImu.ImuCtrl.GyroScaleFactor;

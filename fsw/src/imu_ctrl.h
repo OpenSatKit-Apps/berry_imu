@@ -91,8 +91,10 @@ typedef struct
    ** Class State Data
    */
 
-   uint32  SensorDeltaTime;             /* Time (ms) between sensor readings  */
-   float   DeltaTime;                   /* Time is seconds between samples    */
+   bool    InitCycle;
+   int     SampleStartMs;
+   uint32  SensorDeltaTimeMs;           /* Time (ms) between sensor readings  */
+   float   DeltaTimeSec;                /* Time in seconds between samples    */
    float   ComplimentaryFilterConstant; /* See algorithm in imu_ctrl.c        */
    float   AccelerometerScaleFactor;    /* Degree/LSB (Least Significant Bit) */
    float   GyroScaleFactor;             /* Degree/LSB (Least Significant Bit) */
@@ -113,6 +115,8 @@ typedef struct
    float AccelerometerAngleY;
    float FilterAngleX;
    float FilterAngleY;
+   float PrevFilterAngleX;
+   float PrevFilterAngleY;
 
    /*
    ** Telemetry Packets
